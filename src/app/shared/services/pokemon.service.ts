@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, forkJoin, map, switchMap } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { environment } from 'src/environments/environment.development';
-import { Pokedex } from '../models/pokedex';
 import { Pokemon } from '../models/pokemon';
+import { Status } from '../models/status';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +22,11 @@ export class PokemonService {
             return result.pokemon_entries
             .map(
               (entry: any) => {
-                return entry.pokemon_species as Pokemon;
+                let pokemon: Pokemon = {
+                  id: entry.entry_number,
+                  name: entry.pokemon_species.name
+                }
+                return pokemon;
               }
             ) as Pokemon[];
           }
@@ -38,8 +42,34 @@ export class PokemonService {
       );
   }
 
-  getPokemon(url: string): Observable<Pokemon>{
-    return this.http.get<Pokemon>(url);
+  getPokemon(id: number): Observable<Pokemon>{
+    return this.http.get(`${this.pokemonURL}/pokemon/${id}`)
+      .pipe(
+        map((response: any) => {
+          let pokemon: Pokemon = {
+            id: response.id,
+            name: response.name,
+            height: response.height,
+            weight: response.weight,
+            sprite: response.sprites.other["official-artwork"].front_default,
+            type1: response.types[0].type.name,
+            type2: response.types[1]?.type?.name ?? null
+          };
+
+          let status: Status = {
+            hp: response.stats[0].base_stat,
+            attack: response.stats[1].base_stat,
+            defense: response.stats[2].base_stat,
+            specialAttack: response.stats[3].base_stat,
+            specialDefense: response.stats[4].base_stat,
+            speed: response.stats[5].base_stat
+          }
+
+          pokemon.status = status;
+
+          return pokemon;
+        })
+      );
   }
 
   getByGen(gen: number): Observable<[]>{

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { PokemonService } from '../shared/services/pokemon.service';
 import { Pokemon } from '../shared/models/pokemon';
+import { Observable, forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -10,26 +11,36 @@ import { Pokemon } from '../shared/models/pokemon';
 export class HomeComponent {
 
   quantidadePokemon: number = 0;
-  limitPokemon: number = 5;
-  offsetPokemon: number = 0;
+  
+  offsetPokemon: number = 251;
+  limitPokemon: number = 260;
 
   listaPokemon: Pokemon[] = [];
+  listaDetalhePokemon: Pokemon[] = [];
 
   constructor(
     private pokemonService: PokemonService
   ){
     this.listarPokemons();
-    //this.listarPokemonsPaginado();
   }
 
   listarPokemons(){
-    //this.pokemonService.getNationalDex().subscribe(pokedex => this.quantidadePokemon = pokedex.pokemon_entries.length);
-    //this.pokemonService.getNationalDex().subscribe(pokemons => this.listaPokemon = pokemons);
     this.pokemonService.getNationalDex().subscribe(
       {
         next: (pokemons) => {
-          this.listaPokemon = pokemons;
-          console.log(this.listaPokemon);
+          this.buscarDetalhePokemon(pokemons).subscribe(
+            {
+              next: (detalhePokemons) => {
+                this.listaPokemon = pokemons;
+                this.listaDetalhePokemon = detalhePokemons;
+                console.log(this.listaPokemon);
+                console.log(this.listaDetalhePokemon);
+              },
+              error: (erro: any) => {
+                console.log(erro);
+              },
+              complete: () => {}
+            })
         },
         error: (erro: any) => {
           console.log(erro);
@@ -37,36 +48,12 @@ export class HomeComponent {
         complete: () => {}
       });
   }
-  
-  listarPokemonsPaginado(){
-    /*this.pokemonService.getPokemonsPagination(this.offsetPokemon, this.limitPokemon)
-      .subscribe
-      ({
-        next: (pokemons) => {
-          this.listaPokemon = pokemons;
-          console.log(this.listaPokemon);
-        },
-        error: (erro: any) => {
-          console.log(erro);
-        },
-        complete: () => {}
-      });*/
-    
-    /*this.pokemonService.getPokemonsPagination(this.offsetPokemon, this.limitPokemon).
-      subscribe(pokemons => pokemons.map(pokemon => this.pokemonService.getPokemon(pokemon.url).subscribe(p => this.listaPokemon.push(p))));
-    console.log(this.listaPokemon);*/
 
-    this.pokemonService.getPokemonsPagination(this.offsetPokemon, this.limitPokemon)
-      .subscribe
-      ({
-        next: (pokemons) => {
-          this.listaPokemon = pokemons;
-          console.log(this.listaPokemon);
-        },
-        error: (erro: any) => {
-          console.log(erro);
-        },
-        complete: () => {}
-      });
+  buscarDetalhePokemon(pokemons: Pokemon[]): Observable<Pokemon[]>{
+    pokemons = pokemons.slice(this.offsetPokemon, this.limitPokemon);
+    
+    const observables = pokemons.map((pokemon) => this.pokemonService.getPokemon(pokemon.id));
+
+    return forkJoin(observables);
   }
 }

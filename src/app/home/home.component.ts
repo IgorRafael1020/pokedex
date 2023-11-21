@@ -12,11 +12,11 @@ export class HomeComponent {
 
   quantidadePokemon: number = 0;
   
-  offsetPokemon: number = 251;
-  limitPokemon: number = 260;
+  offsetPokemon: number = 0;
+  limitPokemon: number = 12;
+  pagina: number = 1;
 
   listaPokemon: Pokemon[] = [];
-  listaDetalhePokemon: Pokemon[] = [];
 
   constructor(
     private pokemonService: PokemonService
@@ -31,10 +31,9 @@ export class HomeComponent {
           this.buscarDetalhePokemon(pokemons).subscribe(
             {
               next: (detalhePokemons) => {
+                pokemons.splice(this.offsetPokemon, this.limitPokemon, ...detalhePokemons);
                 this.listaPokemon = pokemons;
-                this.listaDetalhePokemon = detalhePokemons;
                 console.log(this.listaPokemon);
-                console.log(this.listaDetalhePokemon);
               },
               error: (erro: any) => {
                 console.log(erro);
@@ -50,10 +49,26 @@ export class HomeComponent {
   }
 
   buscarDetalhePokemon(pokemons: Pokemon[]): Observable<Pokemon[]>{
-    pokemons = pokemons.slice(this.offsetPokemon, this.limitPokemon);
+    pokemons = pokemons.slice(this.offsetPokemon, this.offsetPokemon + this.limitPokemon);
     
     const observables = pokemons.map((pokemon) => this.pokemonService.getPokemon(pokemon.id));
 
     return forkJoin(observables);
+  }
+
+  mudarPagina(pagina: number){
+    this.pagina = pagina;
+    this.offsetPokemon = this.limitPokemon * (pagina-1);
+    this.buscarDetalhePokemon(this.listaPokemon).subscribe(
+      {
+        next: (detalhePokemons) => {
+          this.listaPokemon.splice(this.offsetPokemon, this.limitPokemon, ...detalhePokemons);
+          console.log(this.listaPokemon);
+        },
+        error: (erro: any) => {
+          console.log(erro);
+        },
+        complete: () => {}
+      })
   }
 }

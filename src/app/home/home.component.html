@@ -7,11 +7,16 @@
     </select>
 
     <div class="container">
-        <div *ngFor="let pokemon of listaDetalhePokemon" class="card" style="width: 18rem;">
-            <img class="card-img-top" src={{pokemon.sprite}} alt="Card image cap">
-            <div class="card-body">
-              <h5 class="card-title">{{pokemon.name}}</h5>
-              <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+        <div class="row justify-content-center">
+            <div *ngFor="let pokemon of listaPokemon | paginate: { itemsPerPage: limitPokemon, currentPage: pagina }" class="card col-3 m-3" style="width: 18rem;">
+                <img class="card-img-top" src={{pokemon.sprite}} alt="Card image cap">
+                <div class="card-body">
+                <h5 class="card-title">{{pokemon.name}}</h5>
+                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                </div>
+            </div>
+            <div class="text-center">
+                <pagination-controls (pageChange)="mudarPagina($event)"></pagination-controls>
             </div>
         </div>
     </div>

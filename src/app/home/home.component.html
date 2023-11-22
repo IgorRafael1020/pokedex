@@ -9,10 +9,14 @@
     <div class="container">
         <div class="row justify-content-center">
             <div *ngFor="let pokemon of listaPokemon | paginate: { itemsPerPage: limitPokemon, currentPage: pagina }" class="card col-3 m-3" style="width: 18rem;">
+                <div class="text-center">#{{pokemon.id.toString().padStart(4, '0')}}</div>
                 <img class="card-img-top" src={{pokemon.sprite}} alt="Card image cap">
-                <div class="card-body">
-                <h5 class="card-title">{{pokemon.name}}</h5>
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                <div class="card-body justify-content-center">
+                    <h5 class="card-title">{{pokemon.name | titlecase}}</h5>
+                    <div class="d-flex justify-content-around">
+                        <div>{{pokemon.type1 | titlecase}}</div>
+                        <div>{{pokemon.type2 | titlecase}}</div>
+                    </div>
                 </div>
             </div>
             <div class="text-center">

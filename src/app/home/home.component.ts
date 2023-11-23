@@ -16,6 +16,8 @@ export class HomeComponent {
   limitPokemon: number = 12;
   pagina: number = 1;
 
+  pokemonSelecionado: Pokemon = { id: 0, name: ""};
+
   listaPokemon: Pokemon[] = [];
 
   constructor(
@@ -70,5 +72,9 @@ export class HomeComponent {
         },
         complete: () => {}
       })
+  }
+
+  selecionarPokemon(pokemon: Pokemon){
+    this.pokemonSelecionado = pokemon;
   }
 }

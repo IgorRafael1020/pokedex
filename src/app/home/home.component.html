@@ -8,9 +8,11 @@
 
     <div class="container">
         <div class="row justify-content-center">
-            <div *ngFor="let pokemon of listaPokemon | paginate: { itemsPerPage: limitPokemon, currentPage: pagina }" class="card col-3 m-3" style="width: 18rem;">
+            <div *ngFor="let pokemon of listaPokemon | paginate: { itemsPerPage: limitPokemon, currentPage: pagina }" 
+            class="card col-3 m-3" style="width: 18rem;">
                 <div class="text-center">#{{pokemon.id.toString().padStart(4, '0')}}</div>
-                <img class="card-img-top" src={{pokemon.sprite}} alt="Card image cap">
+                <img type="button" class="card-img-top" src={{pokemon.sprite}} alt="Card image cap" 
+                data-bs-toggle="modal" data-bs-target="#pokemonModal" (click)="selecionarPokemon(pokemon)">
                 <div class="card-body justify-content-center">
                     <h5 class="card-title">{{pokemon.name | titlecase}}</h5>
                     <div class="d-flex justify-content-around">
@@ -24,5 +26,81 @@
             </div>
         </div>
     </div>
+</div>
 
+<!-- Modal -->
+<div class="modal fade" id="pokemonModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 600px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">{{pokemonSelecionado.name | titlecase}}</h5>
+                <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <img class="card-img-top" src={{pokemonSelecionado.sprite}} alt="Card image cap">
+
+                <nav>
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                      <button class="nav-link active" id="nav-sobre-tab" data-bs-toggle="tab" data-bs-target="#nav-sobre" role="tab" aria-controls="nav-sobre" aria-selected="true">Sobre</button>
+                      <button class="nav-link" id="nav-status-tab" data-bs-toggle="tab" data-bs-target="#nav-status" role="tab" aria-controls="nav-status" aria-selected="false">Status</button>
+                      <!-- <button class="nav-link" id="nav-outros-tab" data-bs-toggle="tab" data-bs-target="#nav-outros" role="tab" aria-controls="nav-outros" aria-selected="false">Outros</button> -->
+                    </div>
+                </nav>
+                <div class="tab-content" id="nav-tabContent">
+                    <div class="tab-pane fade show active" id="nav-sobre" role="tabpanel" aria-labelledby="nav-sobre-tab">
+                        <p>About</p>
+                    </div>
+                    <div class="tab-pane fade" id="nav-status" role="tabpanel" aria-labelledby="nav-status-tab">
+                        <div class="row">
+                            <div class="d-flex my-3">
+                                <div class="col-2" style="font-weight: bold;">HP</div>
+                                <div class="col-1">{{pokemonSelecionado.status?.hp}}</div>
+                                <div class="progress col-9">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" attr.aria-valuenow={{pokemonSelecionado.status?.hp}} aria-valuemin="0" aria-valuemax="300" [style.width]="(pokemonSelecionado.status?.hp ?? 0) / 3 + '%'"></div>
+                                </div>
+                            </div>
+                            <div class="d-flex my-3">
+                                <div class="col-2" style="font-weight: bold;">Attack</div>
+                                <div class="col-1">{{pokemonSelecionado.status?.attack}}</div>
+                                <div class="progress col-9">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" attr.aria-valuenow={{pokemonSelecionado.status?.attack}} aria-valuemin="0" aria-valuemax="300" [style.width]="(pokemonSelecionado.status?.attack ?? 0) / 3 + '%'"></div>
+                                </div>
+                            </div>
+                            <div class="d-flex my-3">
+                                <div class="col-2" style="font-weight: bold;">Defense</div>
+                                <div class="col-1">{{pokemonSelecionado.status?.defense}}</div>
+                                <div class="progress col-9">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" attr.aria-valuenow={{pokemonSelecionado.status?.defense}} aria-valuemin="0" aria-valuemax="300" [style.width]="(pokemonSelecionado.status?.defense ?? 0) / 3 + '%'"></div>
+                                </div>
+                            </div>
+                            <div class="d-flex my-3">
+                                <div class="col-2" style="font-weight: bold;">Sp. Attack</div>
+                                <div class="col-1">{{pokemonSelecionado.status?.specialAttack}}</div>
+                                <div class="progress col-9">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" attr.aria-valuenow={{pokemonSelecionado.status?.specialAttack}} aria-valuemin="0" aria-valuemax="300" [style.width]="(pokemonSelecionado.status?.specialAttack ?? 0) / 3 + '%'"></div>
+                                </div>
+                            </div>
+                            <div class="d-flex my-3">
+                                <div class="col-2" style="font-weight: bold;">Sp. Defense</div>
+                                <div class="col-1">{{pokemonSelecionado.status?.specialDefense}}</div>
+                                <div class="progress col-9">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" attr.aria-valuenow={{pokemonSelecionado.status?.specialDefense}} aria-valuemin="0" aria-valuemax="300" [style.width]="(pokemonSelecionado.status?.specialDefense ?? 0) / 3 + '%'"></div>
+                                </div>
+                            </div>
+                            <div class="d-flex my-3">
+                                <div class="col-2" style="font-weight: bold;">Speed</div>
+                                <div class="col-1">{{pokemonSelecionado.status?.speed}}</div>
+                                <div class="progress col-9">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" attr.aria-valuenow={{pokemonSelecionado.status?.speed}} aria-valuemin="0" aria-valuemax="300" [style.width]="(pokemonSelecionado.status?.speed ?? 0) / 3 + '%'"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <div class="tab-pane fade" id="nav-outros" role="tabpanel" aria-labelledby="nav-outros-tab">
+                        <p>Teste</p>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
